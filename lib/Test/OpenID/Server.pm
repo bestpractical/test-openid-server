@@ -15,9 +15,9 @@ sub handle_request {
     my $nos = Net::OpenID::Server->
       new(get_args      => $cgi,
           post_args     => $cgi,
-          get_user      => \&get_user,
-          is_identity   => \&is_identity,
-          is_trusted    => \&is_trusted,
+          get_user      => \&_get_user,
+          is_identity   => \&_is_identity,
+          is_trusted    => \&_is_trusted,
           server_secret => 'squeamish_ossifrage',
           setup_url     => "http://example.com/pass-identity.bml",
          );
@@ -32,11 +32,11 @@ sub handle_request {
     }
 }
 
-sub get_user {
+sub _get_user {
     return warn $ENV{'REQUEST_URI'};
 }
 
-sub is_identity {
+sub _is_identity {
     my $u = shift; 
     if ($u =~ /identity/) { 
         return 1;
@@ -45,7 +45,7 @@ sub is_identity {
     return 0;
 }
 
-sub is_trusted { 
+sub _is_trusted { 
     my $u = shift; 
     if ($u =~ /untrusted/||!$u) { 
         return 0;
