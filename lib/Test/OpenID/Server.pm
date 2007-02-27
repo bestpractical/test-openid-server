@@ -6,6 +6,8 @@ package Test::OpenID::Server;
 use Net::OpenID::Server;
 use base qw/Test::HTTP::Server::Simple HTTP::Server::Simple::CGI/;
 
+our $VERSION = '0.01';
+
 sub handle_request {
 
     my $self = shift;
