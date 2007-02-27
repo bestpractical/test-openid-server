@@ -8,6 +8,42 @@ use base qw/Test::HTTP::Server::Simple HTTP::Server::Simple::CGI/;
 
 our $VERSION = '0.01';
 
+=head1 NAME
+
+Test::OpenID::Server - setup a simulated openid server
+
+=head1 SYNOPSIS
+
+Test::OpenID::Server will provide a server to test your OpenID client
+against.  To use it, do something like this:
+
+   use Test::More tests => 1;
+   use Test::OpenID::Server;
+   my $server   = Test::OpenID::Server->new;
+   my $url_root = $server->started_ok("server started ok");
+
+Now you can run your OpenID tests against the URL in C<$url_root>.
+
+=head1 METHODS
+
+=head2 new
+
+Create a new test OpenID server
+
+=head2 started_ok
+
+Test whether the server started, and if it did, return the URL it's
+at.
+
+=head1 INTERAL METHODS
+
+These methods implement the HTTP server (see L<HTTP::Server::Simple>).
+You shouldn't call them.
+
+=head2 handle_request
+
+=cut
+
 sub handle_request {
 
     my $self = shift;
@@ -53,5 +89,15 @@ sub _is_trusted {
     
     return 1;
 }
+
+=head1 AUTHORS
+
+=head1 COPYRIGHT
+
+=head1 LICENSE
+
+You may distribute this module under the same terms as Perl 5.8 itself.
+
+=cut
 
 1;
