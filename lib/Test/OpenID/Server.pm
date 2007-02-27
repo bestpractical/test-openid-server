@@ -4,7 +4,7 @@ use strict;
 
 package Test::OpenID::Server;
 use Net::OpenID::Server;
-use base qw/HTTP::Server::Simple::CGI Test::HTTP::Server::Simple/;
+use base qw/Test::HTTP::Server::Simple HTTP::Server::Simple::CGI/;
 
 sub handle_request {
 
