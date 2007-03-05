@@ -30,6 +30,16 @@ Now you can run your OpenID tests against the URL in C<$url_root>.
 
 Create a new test OpenID server
 
+=cut
+
+sub new {
+    my $self = shift;
+    my $port = shift;
+
+    $port = int(rand(5000) + 10000) if not defined $port;
+    return $self->SUPER::new( $port );
+}
+
 =head2 started_ok
 
 Test whether the server started, and if it did, return the URL it's
