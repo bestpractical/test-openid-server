@@ -10,7 +10,7 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-Test::OpenID::Server - setup a simulated openid server
+Test::OpenID::Server - setup a simulated OpenID server
 
 =head1 SYNOPSIS
 
@@ -45,31 +45,49 @@ You shouldn't call them.
 =cut
 
 sub handle_request {
-
     my $self = shift;
     my $cgi = shift;
-    my $nos = Net::OpenID::Server->
-      new(get_args      => $cgi,
-          post_args     => $cgi,
-          get_user      => \&_get_user,
-          is_identity   => \&_is_identity,
-          is_trusted    => \&_is_trusted,
-          server_secret => 'squeamish_ossifrage',
-          setup_url     => "http://example.com/pass-identity.bml",
-         );
-    my ($type, $data) = $nos->handle_page;
-    if ($type eq "redirect") {
-        print "HTTP/1.0 301 REDIRECT\r\n";    # probably OK by now
-        print "Location: $data\r\n\r\n";
-    } else {
-        print "HTTP/1.0 200 OK\r\n";    # probably OK by now
-        print "Content-Type: $type\r\n\r\n$data";
+
+    if ( $ENV{'PATH_INFO'} eq '/openid.server' ) {
+        # We're dealing with the OpenID server endpoint
         
+        my $nos = Net::OpenID::Server->new(
+            get_args      => $cgi,
+            post_args     => $cgi,
+            get_user      => \&_get_user,
+            is_identity   => \&_is_identity,
+            is_trusted    => \&_is_trusted,
+            server_secret => 'squeamish_ossifrage',
+            setup_url     => "http://example.com/pass-identity.bml",
+        );
+        my ($type, $data) = $nos->handle_page( redirect_for_setup => 1 );
+        if ($type eq "redirect") {
+            print "HTTP/1.0 301 REDIRECT\r\n";    # probably OK by now
+            print "Location: $data\r\n\r\n";
+        } else {
+            print "HTTP/1.0 200 OK\r\n";    # probably OK by now
+            print "Content-Type: $type\r\n\r\n$data";
+        }
+    }
+    else {
+        # We're dealing with an OpenID identity page
+        print "HTTP/1.0 200 OK\r\n";
+        print "Content-Type: text/html\r\n\r\n";
+        print <<"        END";
+<html>
+  <head>
+    <link rel="openid.server" href="$ENV{'SERVER_URL'}openid.server" />
+  </head>
+  <body>
+    <p>OpenID identity page for $ENV{'PATH_INFO'}</p>
+  </body>
+</html>
+        END
     }
 }
 
 sub _get_user {
-    return warn $ENV{'REQUEST_URI'};
+    return $ENV{'PATH_INFO'};
 }
 
 sub _is_identity {
