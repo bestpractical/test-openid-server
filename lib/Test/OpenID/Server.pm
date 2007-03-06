@@ -68,7 +68,7 @@ sub handle_request {
             is_identity   => \&_is_identity,
             is_trusted    => \&_is_trusted,
             server_secret => 'squeamish_ossifrage',
-            setup_url     => "http://example.com/pass-identity.bml",
+            setup_url     => "http://example.com/non-existant",
         );
         my ($type, $data) = $nos->handle_page( redirect_for_setup => 1 );
         if ($type eq "redirect") {
@@ -97,12 +97,13 @@ sub handle_request {
 }
 
 sub _get_user {
-    return $ENV{'PATH_INFO'};
+    return "user";
 }
 
 sub _is_identity {
-    my $u = shift; 
-    if ($u =~ /identity/) { 
+    my ($u, $openid) = @_;
+
+    if ($openid =~ /identity/) {
         return 1;
     } 
 
@@ -110,8 +111,9 @@ sub _is_identity {
 }
 
 sub _is_trusted { 
-    my $u = shift; 
-    if ($u =~ /untrusted/||!$u) { 
+    my ($u, $trust, $is_identity) = @_;
+
+    if ( not $u or not $is_identity ) { 
         return 0;
     }
     
