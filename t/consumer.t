@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 
-use Test::More 'no_plan';
+use Test::More tests => 4;
 
 use_ok('Test::OpenID::Server');
 my $s   = Test::OpenID::Server->new;
