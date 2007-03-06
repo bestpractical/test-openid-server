@@ -7,8 +7,6 @@ use_ok('Test::OpenID::Server');
 my $s   = Test::OpenID::Server->new;
 my $URL = $s->started_ok("start server");
 
-diag "root is $URL";
-
 use_ok('Test::WWW::Mechanize');
 my $mech = Test::WWW::Mechanize->new;
 
