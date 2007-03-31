@@ -22,7 +22,11 @@ against.  To use it, do something like this:
    my $server   = Test::OpenID::Server->new;
    my $url_root = $server->started_ok("server started ok");
 
-Now you can run your OpenID tests against the URL in C<$url_root>.
+Now you can run your OpenID tests against the URL in C<$url_root>.  Identities
+are any URL in the form of C<$url_root . "/foo">.  There is one special
+identity: C</unknown>.  This identity will causes the OpenID server
+to return a non-identity page (which will mean the OpenID client won't find an
+identity).  Every other identity will return a successful authentication.
 
 =head1 METHODS
 
@@ -33,17 +37,73 @@ Create a new test OpenID server
 =cut
 
 sub new {
-    my $self = shift;
-    my $port = shift;
+    my $class = shift;
+    my $port  = shift;
 
     $port = int(rand(5000) + 10000) if not defined $port;
-    return $self->SUPER::new( $port );
+    
+    my $self = $class->SUPER::new( $port );
+    return $self;
 }
 
 =head2 started_ok
 
 Test whether the server started, and if it did, return the URL it's
 at.
+
+=cut
+
+#=head2 add_identity NAME
+#
+#Adds an OpenID identity to the server and returns the identity's URL.
+#
+#=cut
+#
+#sub add_identity {
+#    my $self = shift;
+#    my $id   = shift;
+#    
+#    if ( not $self->_is_identity( $id ) ) {
+#        $self->{_identities}{$id} = {};
+#    }
+#    return $self->_identity_url( $id );
+#}
+
+#=head2 delete_identity NAME
+#
+#Removes an OpenID identity from the server.
+#
+#=cut
+#
+#sub delete_identity {
+#    my $self = shift;
+#    my $id   = shift;
+#    delete $self->{_identities}{$id};
+#}
+
+sub _is_identity {
+    my $self = shift;
+    my $id   = shift;
+    return lc $id ne 'unknown' ? $id : undef;
+}
+
+sub _identity_url {
+    my $self = shift;
+    my $id   = shift;
+    return "http://localhost:@{[$self->port]}/$id";
+}
+
+#=head2 modify_trust NAME, URL, BOOLEAN
+#
+#Sets whether or not URL is trusted by NAME.
+#
+#=cut
+#
+#sub modify_trust {
+#    my $self = shift;
+#    my ( $id, $url, $trusted ) = @_;
+#    $self->{_identities}{$id}{$url} = $trusted;
+#}
 
 =head1 INTERAL METHODS
 
@@ -65,8 +125,8 @@ sub handle_request {
             get_args      => $cgi,
             post_args     => $cgi,
             get_user      => \&_get_user,
-            is_identity   => \&_is_identity,
-            is_trusted    => \&_is_trusted,
+            is_identity   => sub { $self->_is_identity( $_[1] ) },
+            is_trusted    => sub { return 1 },
             server_secret => 'squeamish_ossifrage',
             setup_url     => "http://example.com/non-existant",
         );
@@ -80,19 +140,33 @@ sub handle_request {
         }
     }
     else {
-        # We're dealing with an OpenID identity page
+        # We're dealing with an normal page request
         print "HTTP/1.0 200 OK\r\n";
         print "Content-Type: text/html\r\n\r\n";
-        print <<"        END";
+        
+        my ($id) = $ENV{'PATH_INFO'} =~ m{/(.*)$};
+
+        if ( $self->_is_identity( $id ) ) {
+            print <<"            END";
 <html>
   <head>
     <link rel="openid.server" href="$ENV{'SERVER_URL'}openid.server" />
   </head>
   <body>
-    <p>OpenID identity page for $ENV{'PATH_INFO'}</p>
+    <p>OpenID identity page for $id.</p>
   </body>
 </html>
-        END
+            END
+        }
+        else {
+            print <<"            END";
+<html>
+  <body>
+    <p>"$id" is not an identity we recognize.</p>
+  </body>
+</html>
+            END
+        }
     }
 }
 
@@ -100,29 +174,11 @@ sub _get_user {
     return "user";
 }
 
-sub _is_identity {
-    my ($u, $openid) = @_;
-
-    if ($openid =~ /identity/) {
-        return 1;
-    } 
-
-    return 0;
-}
-
-sub _is_trusted { 
-    my ($u, $trust, $is_identity) = @_;
-
-    if ( not $u or not $is_identity ) { 
-        return 0;
-    }
-    
-    return 1;
-}
-
 =head1 AUTHORS
 
 =head1 COPYRIGHT
+
+Copyright (c) 2007 Best Practical Solutions, LLC.
 
 =head1 LICENSE
 
