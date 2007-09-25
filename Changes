@@ -1,0 +1,8 @@
+
+0.02
+
+    Fixed a missing dependency on Test::WWW::Mechanize - Thanks to ask@develooper.com
+
+0.01 
+
+    Initial release
