@@ -90,7 +90,7 @@ sub _is_identity {
 sub _identity_url {
     my $self = shift;
     my $id   = shift;
-    return "http://localhost:@{[$self->port]}/$id";
+    return "http://$ENV{HTTP_HOST}/$id";
 }
 
 #=head2 modify_trust NAME, URL, BOOLEAN
@@ -150,7 +150,7 @@ sub handle_request {
             print <<"            END";
 <html>
   <head>
-    <link rel="openid.server" href="$ENV{'SERVER_URL'}openid.server" />
+    <link rel="openid.server" href="http://$ENV{'HTTP_HOST'}/openid.server" />
   </head>
   <body>
     <p>OpenID identity page for $id.</p>
