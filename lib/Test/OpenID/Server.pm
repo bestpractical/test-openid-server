@@ -122,8 +122,7 @@ sub handle_request {
         # We're dealing with the OpenID server endpoint
         
         my $nos = Net::OpenID::Server->new(
-            get_args      => $cgi,
-            post_args     => $cgi,
+            args          => $cgi,
             get_user      => \&_get_user,
             is_identity   => sub { $self->_is_identity( $_[1] ) },
             is_trusted    => sub { return 1 },
