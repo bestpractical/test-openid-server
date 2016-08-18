@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 use Test::More;
-use Test::Warnings;
+use Test::Warnings qw< :no_end_test had_no_warnings >;
 
 use_ok('Test::OpenID::Server');
 my $s   = Test::OpenID::Server->new;
@@ -22,4 +22,5 @@ $mech->content_contains( "$URL/openid.server", "contains correct server URL" );
 $mech->get_ok( "$URL/openid.server", "fetch openid server endpoint" );
 $mech->content_contains( "OpenID Endpoint", "got openid server endpoint" );
 
+had_no_warnings("Caught no warnings");
 done_testing();

@@ -11,6 +11,6 @@ requires('Test::OpenID::Consumer');
 requires('Test::HTTP::Server::Simple');
 requires('Test::WWW::Mechanize');
 requires('HTTP::Server::Simple');
-test_requires('Test::Warnings');
+test_requires('Test::Warnings', '0.009');
 auto_install();
 WriteAll();
