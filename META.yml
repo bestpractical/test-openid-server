@@ -3,6 +3,7 @@ author:
   - 'Jesse Vincent <jesse@bestpractical.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.36
+  Test::Warnings: '0.009'
 configure_requires:
   ExtUtils::MakeMaker: 6.36
 distribution_type: module
@@ -25,4 +26,4 @@ requires:
   Test::WWW::Mechanize: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: '0.02'
+version: '0.03'

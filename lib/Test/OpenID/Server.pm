@@ -6,7 +6,7 @@ package Test::OpenID::Server;
 use Net::OpenID::Server;
 use base qw/Test::HTTP::Server::Simple HTTP::Server::Simple::CGI/;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
